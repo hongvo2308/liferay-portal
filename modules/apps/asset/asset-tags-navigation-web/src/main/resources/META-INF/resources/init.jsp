@@ -32,6 +32,7 @@ page import="com.liferay.asset.util.comparator.AssetTagCountComparator" %><%@
 page import="com.liferay.portal.kernel.security.permission.ResourceActionsUtil" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.ListUtil" %><%@
+page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.PrefsParamUtil" %>
 
 <%@ page import="java.util.ArrayList" %><%@
