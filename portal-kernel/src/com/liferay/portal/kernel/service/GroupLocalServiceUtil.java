@@ -1287,6 +1287,58 @@ public class GroupLocalServiceUtil {
 	}
 
 	/**
+	 * Returns all the user's site groups and immediate organization groups,
+	 * optionally including the user's inherited organization groups and user
+	 * groups. System and staged groups are not included.
+	 *
+	 * @param userId the primary key of the user
+	 * @param inherit whether to include the user's inherited organization
+	 groups and user groups
+	 * @param isSite the site attribute of Group
+	 * @return the user's groups and immediate organization groups
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static List<Group> getUserGroups(
+			long userId, boolean inherit, boolean isSite)
+		throws PortalException {
+
+		return getService().getUserGroups(userId, inherit, isSite);
+	}
+
+	/**
+	 * Returns an ordered range of all the user's site groups and immediate
+	 * organization groups, optionally including the user's inherited
+	 * organization groups and user groups. System and staged groups are not
+	 * included.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end -
+	 * start</code> instances. <code>start</code> and <code>end</code> are not
+	 * primary keys, they are indexes in the result set. Thus, <code>0</code>
+	 * refers to the first result in the set. Setting both <code>start</code>
+	 * and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	 * result set.
+	 * </p>
+	 *
+	 * @param userId the primary key of the user
+	 * @param inherit whether to include the user's inherited organization
+	 groups and user groups
+	 * @param isSite the site attribute of Group
+	 * @param start the lower bound of the range of groups to return
+	 * @param end the upper bound of the range of groups to return (not
+	 inclusive)
+	 * @return the range of the user's groups and immediate organization groups
+	 ordered by name
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static List<Group> getUserGroups(
+			long userId, boolean inherit, Boolean isSite, int start, int end)
+		throws PortalException {
+
+		return getService().getUserGroups(userId, inherit, isSite, start, end);
+	}
+
+	/**
 	 * Returns an ordered range of all the user's site groups and immediate
 	 * organization groups, optionally including the user's inherited
 	 * organization groups and user groups. System and staged groups are not
@@ -1318,7 +1370,12 @@ public class GroupLocalServiceUtil {
 		return getService().getUserGroups(userId, inherit, start, end);
 	}
 
-	public static List<Group> getUserGroups(long userId, int start, int end) {
+	/**
+	 * @throws PortalException
+	 */
+	public static List<Group> getUserGroups(long userId, int start, int end)
+		throws PortalException {
+
 		return getService().getUserGroups(userId, start, end);
 	}
 

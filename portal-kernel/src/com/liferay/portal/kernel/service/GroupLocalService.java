@@ -1025,6 +1025,54 @@ public interface GroupLocalService
 		throws PortalException;
 
 	/**
+	 * Returns all the user's site groups and immediate organization groups,
+	 * optionally including the user's inherited organization groups and user
+	 * groups. System and staged groups are not included.
+	 *
+	 * @param userId the primary key of the user
+	 * @param inherit whether to include the user's inherited organization
+	 groups and user groups
+	 * @param isSite the site attribute of Group
+	 * @return the user's groups and immediate organization groups
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Group> getUserGroups(
+			long userId, boolean inherit, boolean isSite)
+		throws PortalException;
+
+	/**
+	 * Returns an ordered range of all the user's site groups and immediate
+	 * organization groups, optionally including the user's inherited
+	 * organization groups and user groups. System and staged groups are not
+	 * included.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end -
+	 * start</code> instances. <code>start</code> and <code>end</code> are not
+	 * primary keys, they are indexes in the result set. Thus, <code>0</code>
+	 * refers to the first result in the set. Setting both <code>start</code>
+	 * and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	 * result set.
+	 * </p>
+	 *
+	 * @param userId the primary key of the user
+	 * @param inherit whether to include the user's inherited organization
+	 groups and user groups
+	 * @param isSite the site attribute of Group
+	 * @param start the lower bound of the range of groups to return
+	 * @param end the upper bound of the range of groups to return (not
+	 inclusive)
+	 * @return the range of the user's groups and immediate organization groups
+	 ordered by name
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Group> getUserGroups(
+			long userId, boolean inherit, Boolean isSite, int start, int end)
+		throws PortalException;
+
+	/**
 	 * Returns an ordered range of all the user's site groups and immediate
 	 * organization groups, optionally including the user's inherited
 	 * organization groups and user groups. System and staged groups are not
@@ -1054,8 +1102,12 @@ public interface GroupLocalService
 			long userId, boolean inherit, int start, int end)
 		throws PortalException;
 
+	/**
+	 * @throws PortalException
+	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<Group> getUserGroups(long userId, int start, int end);
+	public List<Group> getUserGroups(long userId, int start, int end)
+		throws PortalException;
 
 	/**
 	 * @throws PortalException

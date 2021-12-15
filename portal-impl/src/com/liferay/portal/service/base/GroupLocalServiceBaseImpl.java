@@ -869,9 +869,12 @@ public abstract class GroupLocalServiceBaseImpl
 	}
 
 	/**
+	 * @throws PortalException
 	 */
 	@Override
-	public List<Group> getUserGroups(long userId, int start, int end) {
+	public List<Group> getUserGroups(long userId, int start, int end)
+		throws PortalException {
+
 		return userPersistence.getGroups(userId, start, end);
 	}
 
