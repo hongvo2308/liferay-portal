@@ -19,7 +19,7 @@
 <%
 String tabs1 = ParamUtil.getString(request, "tabs1", "sites");
 
-List<Group> groups = GroupLocalServiceUtil.getUserGroups(user.getUserId(), true);
+List<Group> groups = GroupLocalServiceUtil.getUserGroups(user.getUserId(), true, true);
 List<Organization> organizations = OrganizationLocalServiceUtil.getUserOrganizations(user.getUserId());
 List<Role> roles = RoleLocalServiceUtil.getRoles(PortalUtil.getCompanyId(renderRequest));
 List<UserGroup> userGroups = UserGroupLocalServiceUtil.getUserGroups(themeDisplay.getCompanyId());
