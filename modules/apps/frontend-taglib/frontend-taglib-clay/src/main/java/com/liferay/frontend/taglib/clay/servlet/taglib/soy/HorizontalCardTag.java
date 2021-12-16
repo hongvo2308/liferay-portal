@@ -15,6 +15,7 @@
 package com.liferay.frontend.taglib.clay.servlet.taglib.soy;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.soy.base.BaseClayCardTag;
+import com.liferay.portal.kernel.util.HtmlUtil;
 
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class HorizontalCardTag extends BaseClayCardTag {
 	}
 
 	public void setTitle(String title) {
-		putValue("title", title);
+		putValue("title", HtmlUtil.escapeAttribute(title));
 	}
 
 	private void _populateContext() {
