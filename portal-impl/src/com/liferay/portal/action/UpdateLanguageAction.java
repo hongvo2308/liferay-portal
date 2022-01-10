@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.struts.Action;
+import com.liferay.portal.struts.StrutsUtil;
 import com.liferay.portal.struts.model.ActionForward;
 import com.liferay.portal.struts.model.ActionMapping;
 import com.liferay.portal.util.PropsValues;
@@ -44,6 +45,7 @@ import com.liferay.portlet.admin.util.AdminUtil;
 
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -207,7 +209,8 @@ public class UpdateLanguageAction implements Action {
 			}
 		}
 
-		if (isFriendlyURLResolver(layoutURL) || layout.isTypeControlPanel()) {
+		if (isFriendlyURLResolver(layoutURL) || layout.isTypeControlPanel() ||
+			layoutURL.startsWith(Portal.PATH_MAIN)) {
 			redirect = layoutURL + friendlyURLSeparatorPart;
 		}
 		else if (layoutURL.equals(StringPool.SLASH) ||
