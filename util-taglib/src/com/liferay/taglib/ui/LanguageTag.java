@@ -15,13 +15,16 @@
 package com.liferay.taglib.ui;
 
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Ticket;
 import com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateManagerUtil;
 import com.liferay.portal.kernel.servlet.taglib.ui.LanguageEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -171,9 +174,17 @@ public class LanguageTag extends IncludeTag {
 			themeDisplay.getPathMain() + "/portal/update_language?p_l_id=" +
 				themeDisplay.getPlid();
 
+		String ticketKey = ParamUtil.getString(
+			httpServletRequest, "ticketKey");
+		String redirect = PortalUtil.getCurrentURL(httpServletRequest);
+
+		if (!Validator.isBlank(ticketKey)) {
+			redirect = HttpUtil.addParameter(
+				redirect, "ticketKey", ticketKey);
+		}
+
 		formAction = HttpUtil.setParameter(
-			formAction, "redirect",
-			PortalUtil.getCurrentURL(httpServletRequest));
+			formAction, "redirect", redirect);
 
 		return formAction;
 	}
