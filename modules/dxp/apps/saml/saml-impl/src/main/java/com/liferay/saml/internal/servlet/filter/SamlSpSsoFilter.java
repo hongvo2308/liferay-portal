@@ -23,6 +23,8 @@ import com.liferay.portal.kernel.struts.LastPath;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
@@ -231,7 +233,13 @@ public class SamlSpSsoFilter extends BaseSamlPortalFilter {
 				lastPath.getParameters());
 		}
 		else if (Validator.isNull(relayState)) {
-			relayState = _portal.getHomeURL(httpServletRequest);
+			relayState = PrefsPropsUtil.getString(
+				PortalUtil.getCompanyId(httpServletRequest),
+				PropsKeys.DEFAULT_LANDING_PAGE_PATH);
+
+			if (Validator.isNull(relayState)) {
+				relayState = _portal.getHomeURL(httpServletRequest);
+			}
 		}
 
 		_webSsoProfile.sendAuthnRequest(
