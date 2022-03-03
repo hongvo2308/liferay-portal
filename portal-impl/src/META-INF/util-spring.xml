@@ -316,6 +316,10 @@
 	<bean class="com.liferay.portal.kernel.xmlrpc.XmlRpcUtil" id="com.liferay.portal.kernel.xmlrpc.XmlRpcUtil">
 		<property name="xmlRpc" ref="com.liferay.portal.kernel.xmlrpc.XmlRpc" />
 	</bean>
+	<bean class="com.liferay.portal.zip.SevenZipWriterFactoryImpl" id="com.liferay.portal.kernel.zip.SevenZipWriterFactory" />
+	<bean class="com.liferay.portal.kernel.zip.SevenZipWriterFactoryUtil" id="com.liferay.portal.kernel.zip.SevenZipWriterFactoryUtil">
+		<property name="sevenZipWriterFactory" ref="com.liferay.portal.kernel.zip.SevenZipWriterFactory" />
+	</bean>
 	<bean class="com.liferay.portal.zip.ZipReaderFactoryImpl" id="com.liferay.portal.kernel.zip.ZipReaderFactory" />
 	<bean class="com.liferay.portal.kernel.zip.ZipReaderFactoryUtil" id="com.liferay.portal.kernel.zip.ZipReaderFactoryUtil">
 		<property name="zipReaderFactory" ref="com.liferay.portal.kernel.zip.ZipReaderFactory" />
