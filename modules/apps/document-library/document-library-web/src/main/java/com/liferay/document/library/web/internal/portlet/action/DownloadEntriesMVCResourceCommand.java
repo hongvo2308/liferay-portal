@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.zip.SevenZipWriterFactoryUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.util.RepositoryUtil;
@@ -204,13 +205,26 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 			WebKeys.THEME_DISPLAY);
 
 		long folderId = ParamUtil.getLong(resourceRequest, "folderId");
+		String format = ParamUtil.getString(
+			resourceRequest, "format", _DEFAULT_FOLDER_DOWNLOAD_FORMAT);
 
 		_checkFolder(folderId);
 
-		ZipWriter zipWriter = ZipWriterFactoryUtil.getZipWriter();
+		ZipWriter zipWriter;
+		String contentType;
+
+		if (format.equals("7z")) {
+			zipWriter = SevenZipWriterFactoryUtil.getZipWriter();
+			contentType = ContentTypes.APPLICATION_7ZIP;
+		}
+		else {
+			zipWriter = ZipWriterFactoryUtil.getZipWriter();
+			contentType = ContentTypes.APPLICATION_ZIP;
+		}
 
 		try {
-			String zipFileName = _getZipFileName(folderId, themeDisplay);
+			String zipFileName = _getZipFileName(
+				folderId, themeDisplay, format);
 
 			long repositoryId = ParamUtil.getLong(
 				resourceRequest, "repositoryId");
@@ -222,7 +236,7 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 
 				PortletResponseUtil.sendFile(
 					resourceRequest, resourceResponse, zipFileName, inputStream,
-					ContentTypes.APPLICATION_ZIP);
+					contentType);
 			}
 		}
 		finally {
@@ -235,13 +249,23 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 	private String _getZipFileName(long folderId, ThemeDisplay themeDisplay)
 		throws PortalException {
 
+		return _getZipFileName(
+			folderId, themeDisplay, _DEFAULT_FOLDER_DOWNLOAD_FORMAT);
+	}
+
+	private String _getZipFileName(
+			long folderId, ThemeDisplay themeDisplay, String format)
+		throws PortalException {
+
 		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 			Folder folder = _dlAppService.getFolder(folderId);
 
-			return folder.getName() + ".zip";
+			return StringBundler.concat(
+				folder.getName(), StringPool.PERIOD, format);
 		}
 
-		return themeDisplay.getScopeGroupName() + ".zip";
+		return StringBundler.concat(
+			themeDisplay.getScopeGroupName(), StringPool.PERIOD, format);
 	}
 
 	private boolean _isExternalRepositoryFolder(Folder folder) {
@@ -310,6 +334,8 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 			}
 		}
 	}
+
+	private static final String _DEFAULT_FOLDER_DOWNLOAD_FORMAT = "zip";
 
 	@Reference
 	private DLAppService _dlAppService;
