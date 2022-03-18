@@ -36,6 +36,8 @@ import java.sql.Types;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Alexander Chow
@@ -99,6 +101,9 @@ public class SQLServerDB extends BaseDB {
 		template = StringUtil.replace(
 			template, new String[] {"\\\\", "\\'", "\\\"", "\\n", "\\r"},
 			new String[] {"\\", "''", "\"", "\n", "\r"});
+
+		template = _updateNVarCharInsert(
+			_REGION_INSERT_COLUMN_NAME_PATTERN, template);
 
 		return template;
 	}
@@ -264,6 +269,36 @@ public class SQLServerDB extends BaseDB {
 			return sb.toString();
 		}
 	}
+
+	private String _updateNVarCharInsert(String queryPattern, String template) {
+		StringBuffer result = new StringBuffer();
+
+		Pattern pattern = Pattern.compile(queryPattern);
+
+		Matcher matcher = pattern.matcher(template);
+
+		while (matcher.find()) {
+			String query = matcher.group(0);
+
+			String oldString = matcher.group(1);
+
+			String repString = "N" + oldString;
+
+			query = query.replaceAll(oldString, repString);
+
+			if (repString != null) {
+				matcher.appendReplacement(result, query);
+			}
+		}
+
+		matcher.appendTail(result);
+
+		return result.toString();
+	}
+
+	private static final String _REGION_INSERT_COLUMN_NAME_PATTERN =
+		"insert into Region \\(regionId, countryId, regionCode, name, active_" +
+		"\\) values \\(\\d+, \\d+, '.+', ('.+'), \\d+\\)";
 
 	private static final String[] _SQL_SERVER = {
 		"--", "1", "0", "'19700101'", "GetDate()", " image", " image", " bit",
