@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.language.override.exception.PLOEntryKeyException;
+import com.liferay.portal.language.override.exception.PLOEntryKeyValueException;
 import com.liferay.portal.language.override.model.PLOEntry;
 import com.liferay.portal.language.override.service.base.PLOEntryLocalServiceBaseImpl;
 
@@ -62,7 +63,7 @@ public class PLOEntryLocalServiceImpl extends PLOEntryLocalServiceBaseImpl {
 
 			ploEntry.setUserId(user.getUserId());
 
-			_validateKey(key);
+			_validate(key, value);
 
 			ploEntry.setKey(key);
 			ploEntry.setLanguageId(languageId);
@@ -139,7 +140,7 @@ public class PLOEntryLocalServiceImpl extends PLOEntryLocalServiceBaseImpl {
 		}
 	}
 
-	private void _validateKey(String key) throws PortalException {
+	private void _validate(String key, String value) throws PortalException {
 		if (Validator.isNull(key)) {
 			throw new PLOEntryKeyException.MustNotBeNull();
 		}
@@ -149,6 +150,10 @@ public class PLOEntryLocalServiceImpl extends PLOEntryLocalServiceBaseImpl {
 
 		if (key.length() > keyMaxLength) {
 			throw new PLOEntryKeyException.MustBeShorter(keyMaxLength);
+		}
+
+		if (Validator.isNull(value)) {
+			throw new PLOEntryKeyValueException.MustNotBeNull();
 		}
 	}
 

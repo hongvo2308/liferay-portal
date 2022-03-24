@@ -49,6 +49,8 @@ renderResponse.setTitle(LanguageUtil.get(request, "import-translations"));
 
 		<liferay-ui:error exception="<%= PLOEntryKeyException.MustNotBeNull.class %>" message="there-exists-at-least-one-key-is-null" />
 
+		<liferay-ui:error exception="<%= PLOEntryKeyValueException.MustNotBeNull.class %>" message="there-exists-at-least-one-key-value-is-null" />
+
 		<h5><liferay-ui:message key="import-file" /></h5>
 
 		<div class="sheet-text">
