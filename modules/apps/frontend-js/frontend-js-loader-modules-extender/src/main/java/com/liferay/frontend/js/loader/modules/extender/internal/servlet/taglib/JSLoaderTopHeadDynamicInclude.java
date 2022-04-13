@@ -88,6 +88,7 @@ public class JSLoaderTopHeadDynamicInclude extends BaseDynamicInclude {
 		printWriter.write(String.valueOf(_details.waitTimeout() * 1000));
 		printWriter.write(
 			"};</script><script data-senna-track=\"permanent\" src=\"");
+		printWriter.write(_portal.getPathProxy());
 		printWriter.write(_servletContext.getContextPath());
 		printWriter.write("/loader.js\" type=\"");
 		printWriter.write(ContentTypes.TEXT_JAVASCRIPT);
