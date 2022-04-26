@@ -25,7 +25,7 @@ ObjectAction objectAction = objectDefinitionsActionsDisplayContext.getObjectActi
 <liferay-frontend:side-panel-content
 	title='<%= LanguageUtil.get(request, "action") %>'
 >
-	<form action="javascript:;" onSubmit="<%= liferayPortletResponse.getNamespace() + "saveObjectAction();" %>">
+	<form action="javascript:;" name="updateFm" onSubmit="<%= liferayPortletResponse.getNamespace() + "saveObjectAction(event);" %>">
 		<div class="side-panel-content">
 			<div class="side-panel-content__body">
 				<div class="sheet">
@@ -62,7 +62,19 @@ ObjectAction objectAction = objectDefinitionsActionsDisplayContext.getObjectActi
 </liferay-frontend:side-panel-content>
 
 <script>
-	function <portlet:namespace />saveObjectAction() {
+	function <portlet:namespace />saveObjectAction(event) {
+		var liferayForm = Liferay.Form.get('<portlet:namespace />updateFm');
+
+		if (liferayForm) {
+			liferayForm.formValidator.validate();
+
+			if (liferayForm.formValidator.hasErrors()) {
+				event.preventDefault();
+
+				return;
+			}
+		}
+
 		const active = document.getElementById('<portlet:namespace />active');
 
 		const name = document.getElementById('<portlet:namespace />name');
