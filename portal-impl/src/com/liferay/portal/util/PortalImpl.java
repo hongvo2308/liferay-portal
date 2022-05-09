@@ -8045,7 +8045,7 @@ public class PortalImpl implements Portal {
 
 		List<Portlet> explicitlyAddedPortlets = new ArrayList<>();
 
-		if (!layout.isTypeAssetDisplay() && !layout.isTypeContent()) {
+		if (!layout.isTypeAssetDisplay()) {
 			explicitlyAddedPortlets =
 				layoutTypePortlet.getExplicitlyAddedPortlets(false);
 		}
