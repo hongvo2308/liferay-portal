@@ -16,11 +16,19 @@ package com.liferay.journal.web.internal.portlet.action;
 
 import com.liferay.data.engine.rest.resource.v2_0.DataDefinitionResource;
 import com.liferay.journal.constants.JournalPortletKeys;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.TransactionConfig;
+import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+
+import java.util.concurrent.Callable;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -71,11 +79,55 @@ public class DeleteDataDefinitionMVCActionCommand extends BaseMVCActionCommand {
 			).build();
 
 		for (long deleteDataDefinitionId : deleteDataDefinitionIds) {
-			dataDefinitionResource.deleteDataDefinition(deleteDataDefinitionId);
+			Callable<Long> callable = new DeleteDataDefinitionsCallable(
+				dataDefinitionResource, deleteDataDefinitionId);
+
+			try {
+				TransactionInvokerUtil.invoke(_transactionConfig, callable);
+			}
+			catch (Throwable throwable) {
+				SessionErrors.add(actionRequest, throwable.getClass());
+			}
 		}
 	}
 
+	private long _deleteDataDefinition(
+			DataDefinitionResource dataDefinitionResource,
+			long deleteDataDefinitionId)
+		throws Exception {
+
+		dataDefinitionResource.deleteDataDefinition(deleteDataDefinitionId);
+
+		return deleteDataDefinitionId;
+	}
+
+	private static final TransactionConfig _transactionConfig =
+		TransactionConfig.Factory.create(
+			Propagation.REQUIRED,
+			new Class<?>[] {PortalException.class, SystemException.class});
+
 	@Reference
 	private DataDefinitionResource.Factory _dataDefinitionResourceFactory;
+
+	private class DeleteDataDefinitionsCallable implements Callable<Long> {
+
+		@Override
+		public Long call() throws Exception {
+			return _deleteDataDefinition(
+				_dataDefinitionResource, _deleteDataDefinitionId);
+		}
+
+		private DeleteDataDefinitionsCallable(
+			DataDefinitionResource dataDefinitionResource,
+			long deleteDataDefinitionId) {
+
+			_dataDefinitionResource = dataDefinitionResource;
+			_deleteDataDefinitionId = deleteDataDefinitionId;
+		}
+
+		private final DataDefinitionResource _dataDefinitionResource;
+		private final long _deleteDataDefinitionId;
+
+	}
 
 }
