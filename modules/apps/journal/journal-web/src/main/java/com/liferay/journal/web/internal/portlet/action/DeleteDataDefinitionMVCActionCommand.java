@@ -89,6 +89,10 @@ public class DeleteDataDefinitionMVCActionCommand extends BaseMVCActionCommand {
 				SessionErrors.add(actionRequest, throwable.getClass());
 			}
 		}
+
+		String redirect = ParamUtil.getString(actionRequest, "redirect");
+
+		sendRedirect(actionRequest, actionResponse, redirect);
 	}
 
 	private long _deleteDataDefinition(
