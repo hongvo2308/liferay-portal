@@ -67,6 +67,12 @@ public class DLSizeLimitManagedServiceFactory implements ManagedServiceFactory {
 		return dlSizeLimitConfiguration.fileMaxSize();
 	}
 
+	public Map<String, Long> getCompanyMimeTypeSizeLimit(long companyId) {
+		return _companyMimeTypeSizeLimitsMap.computeIfAbsent(
+			companyId, this::_computeCompanyMimeTypeSizeLimit);
+	}
+
+
 	public long getCompanyMimeTypeSizeLimit(long companyId, String mimeType) {
 		if (Validator.isNull(mimeType)) {
 			return 0;
