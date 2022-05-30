@@ -24,6 +24,7 @@ import com.liferay.image.uploader.web.internal.constants.ImageUploaderPortletKey
 import com.liferay.image.uploader.web.internal.util.UploadImageUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.exception.ImageMagickException;
 import com.liferay.portal.kernel.exception.ImageTypeException;
 import com.liferay.portal.kernel.exception.NoSuchRepositoryException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -206,12 +207,18 @@ public class UploadImageMVCActionCommand extends BaseMVCActionCommand {
 			throw new ImageTypeException();
 		}
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		if (StringUtil.equalsIgnoreCase(mimeType, ContentTypes.IMAGE_HEIC)) {
-			file = _convertToJPEG(
-				file, UploadImageUtil.getMaxFileSize(portletRequest));
+			try {
+				file = _convertToJPEG(
+					file, UploadImageUtil.getMaxFileSize(portletRequest));
+			}
+			catch (Exception exception) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(exception);
+				}
+
+				throw new ImageMagickException();
+			}
 
 			contentType = ContentTypes.IMAGE_JPEG;
 
@@ -219,6 +226,9 @@ public class UploadImageMVCActionCommand extends BaseMVCActionCommand {
 				FileUtil.stripExtension(fileName), StringPool.PERIOD,
 				ImageTool.TYPE_JPEG);
 		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		try {
 			TempFileEntryUtil.deleteTempFileEntry(
@@ -288,6 +298,7 @@ public class UploadImageMVCActionCommand extends BaseMVCActionCommand {
 				 exception instanceof NoSuchFileException ||
 				 exception instanceof UploadException ||
 				 exception instanceof UploadRequestSizeException ||
+				 (exception.getCause() instanceof ImageMagickException) ||
 				 (exception.getCause() instanceof ImageTypeException) ||
 				 (exception.getCause() instanceof UploadRequestSizeException)) {
 
@@ -348,6 +359,15 @@ public class UploadImageMVCActionCommand extends BaseMVCActionCommand {
 							_uploadServletRequestConfigurationHelper.
 								getMaxSize(),
 							themeDisplay.getLocale()));
+				}
+				else if ((exception instanceof ImageMagickException) ||
+						 (exception.getCause() instanceof
+							 ImageMagickException)) {
+
+					errorMessage = themeDisplay.translate(
+						"the-imagemagick-supporting-.heic-is-not-installed-" +
+							"on-your-system.-please-contact-your-" +
+								"administrator-to-install-it");
 				}
 
 				JSONObject jsonObject = JSONUtil.put(
