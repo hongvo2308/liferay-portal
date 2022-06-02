@@ -40,8 +40,12 @@ public class SimulationDeviceDynamicInclude extends BaseDynamicInclude {
 
 		PrintWriter printWriter = httpServletResponse.getWriter();
 
+		String content = StringUtil.removeSubstring(
+			_TMPL_CONTENT,
+			"//# sourceMappingURL=simulation_device_dynamic_include.js.map");
+
 		printWriter.print(
-			"<script type=\"text/javascript\">" + _TMPL_CONTENT + "</script>");
+			"<script type=\"text/javascript\">" + content + "</script>");
 	}
 
 	@Override
