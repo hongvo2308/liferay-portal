@@ -266,6 +266,9 @@ public class SubscriptionDLAppHelperLocalServiceWrapper
 			DLFolder.class.getName(), fileVersion.getGroupId());
 
 		if (folder != null) {
+			subscriptionSender.addTargetSubscription(
+				DLFolder.class.getName(), folder.getFolderId());
+
 			subscriptionSender.addPersistedSubscribers(
 				DLFolder.class.getName(), folder.getFolderId());
 

@@ -141,6 +141,10 @@ public class SubscriptionSender implements Serializable {
 		_runtimeSubscribersOVPs.add(ovp);
 	}
 
+	public void addTargetSubscription(String className, long classPK) {
+		_targetSubscription = new Tuple(className, classPK);
+	}
+
 	public void flushNotifications() throws Exception {
 		initialize();
 
@@ -642,6 +646,17 @@ public class SubscriptionSender implements Serializable {
 			}
 		}
 
+		if (_targetSubscription != null) {
+			String targetClassName = (String)_targetSubscription.getObject(0);
+			long targetClassPK = (long)_targetSubscription.getObject(1);
+
+			if (!_hasSubscribePermission(
+				permissionChecker, targetClassName, targetClassPK)) {
+
+				return false;
+			}
+		}
+
 		hasPermission = hasSubscribePermission(permissionChecker, subscription);
 
 		if ((hasPermission == null) || !hasPermission) {
@@ -664,17 +679,9 @@ public class SubscriptionSender implements Serializable {
 			PermissionChecker permissionChecker, Subscription subscription)
 		throws PortalException {
 
-		ResourceAction resourceAction =
-			ResourceActionLocalServiceUtil.fetchResourceAction(
-				subscription.getClassName(), ActionKeys.SUBSCRIBE);
-
-		if (resourceAction != null) {
-			return BaseModelPermissionCheckerUtil.containsBaseModelPermission(
-				permissionChecker, groupId, subscription.getClassName(),
-				subscription.getClassPK(), ActionKeys.SUBSCRIBE);
-		}
-
-		return Boolean.TRUE;
+		return _hasSubscribePermission(
+			permissionChecker, subscription.getClassName(),
+			subscription.getClassPK());
 	}
 
 	protected void notifyPersistedSubscriber(
@@ -1133,6 +1140,23 @@ public class SubscriptionSender implements Serializable {
 			localizedPortletTitleMap, locale, portletName);
 	}
 
+	private Boolean _hasSubscribePermission(
+		PermissionChecker permissionChecker, String className, long classPK){
+
+		ResourceAction resourceAction =
+			ResourceActionLocalServiceUtil.fetchResourceAction(
+				className, ActionKeys.SUBSCRIBE);
+
+		if (resourceAction != null) {
+
+			return BaseModelPermissionCheckerUtil.containsBaseModelPermission(
+				permissionChecker, groupId, className,
+				classPK, ActionKeys.SUBSCRIBE);
+		}
+
+		return Boolean.TRUE;
+	}
+
 	private <T> void _notifyHooks(Hook.Event<T> event, T payload) {
 		List<Hook<T>> hooks = _getHooks(event);
 
@@ -1195,6 +1219,7 @@ public class SubscriptionSender implements Serializable {
 		_runtimeSubscribersOVPs = new ArrayList<>();
 	private boolean _sendToCurrentUser;
 	private final Set<String> _sentEmailAddresses = new HashSet<>();
+	private Tuple _targetSubscription;
 
 	private static class HTMLAtributeEscapableObject<T>
 		extends EscapableObject<T> {
