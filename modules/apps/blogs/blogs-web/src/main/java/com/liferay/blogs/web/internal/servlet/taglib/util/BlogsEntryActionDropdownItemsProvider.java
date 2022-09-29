@@ -42,7 +42,9 @@ import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.security.PermissionsURLTag;
 import com.liferay.trash.TrashHelper;
@@ -314,11 +316,17 @@ public class BlogsEntryActionDropdownItemsProvider {
 	}
 
 	private String _getRedirectURL() {
-		return PortletURLBuilder.createRenderURL(
-			_renderResponse
-		).setMVCRenderCommandName(
-			"/blogs/view"
-		).buildString();
+		String redirect = ParamUtil.getString(_httpServletRequest, "redirect");
+
+		if (Validator.isBlank(redirect)) {
+			redirect = PortletURLBuilder.createRenderURL(
+				_renderResponse
+			).setMVCRenderCommandName(
+				"/blogs/view"
+			).buildString();
+		}
+
+		return redirect;
 	}
 
 	private boolean _hasDeletePermission(BlogsEntry blogsEntry) {
