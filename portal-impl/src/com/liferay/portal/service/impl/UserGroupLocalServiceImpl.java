@@ -55,11 +55,13 @@ import com.liferay.portal.kernel.search.reindexer.ReindexerBridge;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.exportimport.UserGroupImportTransactionThreadLocal;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserGroupGroupRoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.permission.TeamPermissionUtil;
 import com.liferay.portal.kernel.service.persistence.GroupPersistence;
 import com.liferay.portal.kernel.service.persistence.TeamPersistence;
 import com.liferay.portal.kernel.service.persistence.UserFinder;
@@ -197,6 +199,19 @@ public class UserGroupLocalServiceImpl extends UserGroupLocalServiceBaseImpl {
 		userGroup.setExternalReferenceCode(externalReferenceCode);
 
 		return userGroupPersistence.update(userGroup);
+	}
+
+	@Override
+	public void addTeamUserGroups(long teamId, long[] userGroupIds){
+
+		super.addTeamUserGroups(teamId, userGroupIds);
+
+		try {
+			reindexUsers(userGroupIds);
+		}
+		catch (PortalException portalException) {
+			throw new SystemException(portalException);
+		}
 	}
 
 	/**
@@ -924,6 +939,13 @@ public class UserGroupLocalServiceImpl extends UserGroupLocalServiceBaseImpl {
 	@Override
 	public void unsetTeamUserGroups(long teamId, long[] userGroupIds) {
 		_teamPersistence.removeUserGroups(teamId, userGroupIds);
+
+		try {
+			reindexUsers(userGroupIds);
+		}
+		catch (PortalException portalException) {
+			throw new SystemException(portalException);
+		}
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
