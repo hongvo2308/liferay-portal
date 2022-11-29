@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.segments.constants.SegmentsEntryConstants;
 import com.liferay.segments.context.Context;
 import com.liferay.segments.criteria.Criteria;
 import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributor;
@@ -39,7 +40,9 @@ import com.liferay.segments.provider.SegmentsEntryProvider;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsEntryRelLocalService;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Reference;
@@ -149,13 +152,23 @@ public abstract class BaseSegmentsEntryProvider
 			return new long[0];
 		}
 
+		LongStream filterSegmentsEntryIdsLongStream = Arrays.stream(
+			filterSegmentsEntryIds);
+
+		long[] filterSegmentsEntryIdsNoDefault =
+			filterSegmentsEntryIdsLongStream.filter(
+				segmentsEntryId ->
+					segmentsEntryId != SegmentsEntryConstants.ID_DEFAULT
+			).toArray();
+
 		Stream<SegmentsEntry> stream = segmentsEntries.stream();
 
 		return stream.filter(
 			segmentsEntry ->
-				ArrayUtil.isEmpty(filterSegmentsEntryIds) ||
+				ArrayUtil.isEmpty(filterSegmentsEntryIdsNoDefault) ||
 				ArrayUtil.contains(
-					filterSegmentsEntryIds, segmentsEntry.getSegmentsEntryId())
+					filterSegmentsEntryIdsNoDefault,
+					segmentsEntry.getSegmentsEntryId())
 		).filter(
 			segmentsEntry -> isMember(
 				className, classPK, context, segmentsEntry, segmentsEntryIds)
