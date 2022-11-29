@@ -107,6 +107,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PrefsParamUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -2266,10 +2267,20 @@ public class AssetPublisherDisplayContext {
 	}
 
 	private long[] _getSegmentsEntryIds() {
-		return _segmentsEntryRetriever.getSegmentsEntryIds(
-			_themeDisplay.getScopeGroupId(), _themeDisplay.getUserId(),
-			_requestContextMapper.map(
-				PortalUtil.getHttpServletRequest(_portletRequest)));
+		long[] requestSegmentsEntryIds = GetterUtil.getLongValues(
+			_portletRequest.getAttribute(SegmentsWebKeys.SEGMENTS_ENTRY_IDS));
+
+		long[] portletSegmentsEntryIds =
+			_segmentsEntryRetriever.getSegmentsEntryIds(
+				_themeDisplay.getScopeGroupId(), _themeDisplay.getUserId(),
+				_requestContextMapper.map(
+					PortalUtil.getHttpServletRequest(_portletRequest)),
+				requestSegmentsEntryIds);
+
+		return ArrayUtil.toLongArray(
+			SetUtil.fromArray(
+				ArrayUtil.append(
+					requestSegmentsEntryIds, portletSegmentsEntryIds)));
 	}
 
 	private boolean _isShowRelatedAssets() {
