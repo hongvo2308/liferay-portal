@@ -15,18 +15,21 @@
 package com.liferay.portlet;
 
 import com.liferay.petra.lang.HashUtil;
+import com.liferay.portal.db.partition.DBPartitionUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortalPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.PortalPreferenceValueUtil;
 import com.liferay.portal.kernel.service.persistence.PortalPreferencesUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
+import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.simple.Element;
@@ -393,8 +396,19 @@ public class PortalPreferencesImpl
 
 	public void store() throws IOException {
 		try {
-			PortalPreferencesLocalServiceUtil.updatePreferences(
-				getOwnerId(), getOwnerType(), this);
+			if (!DBPartitionUtil.isPartitionEnabled() ||
+				((getOwnerId() != PortletKeys.PREFS_OWNER_ID_DEFAULT) &&
+				 (getOwnerType() == PortletKeys.PREFS_OWNER_TYPE_COMPANY))) {
+
+				PortalPreferencesLocalServiceUtil.updatePreferences(
+					getOwnerId(), getOwnerType(), this);
+
+				return;
+			}
+
+			CompanyLocalServiceUtil.forEachCompany(
+				company -> PortalPreferencesLocalServiceUtil.updatePreferences(
+					getOwnerId(), getOwnerType(), this));
 		}
 		catch (Throwable throwable) {
 			throw new IOException(throwable);
