@@ -124,6 +124,7 @@ import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portlet.PortalPreferencesWrapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -220,8 +221,20 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 			DBPartitionUtil.setDefaultCompanyId(company.getCompanyId());
 		}
 
+		com.liferay.portal.kernel.portlet.PortalPreferences
+			systemPortalPreferences = null;
+
 		boolean newDBPartitionAdded = DBPartitionUtil.addDBPartition(
 			company.getCompanyId());
+
+		if (newDBPartitionAdded) {
+			PortalPreferencesWrapper portalPreferencesWrapper =
+				(PortalPreferencesWrapper)PrefsPropsUtil.getPreferences(
+					PortletKeys.PREFS_OWNER_ID_DEFAULT);
+
+			systemPortalPreferences =
+				portalPreferencesWrapper.getPortalPreferencesImpl();
+		}
 
 		SafeCloseable safeCloseable =
 			CompanyThreadLocal.setInitializingCompanyIdWithSafeCloseable(
@@ -242,6 +255,13 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 			if (newDBPartitionAdded) {
 				_dlFileEntryTypeLocalService.
 					createBasicDocumentDLFileEntryType();
+			}
+
+			if (systemPortalPreferences != null) {
+				_portalPreferencesLocalService.updatePreferences(
+					PortletKeys.PREFS_OWNER_ID_DEFAULT,
+					PortletKeys.PREFS_OWNER_TYPE_COMPANY,
+					systemPortalPreferences);
 			}
 
 			String name = webId;
