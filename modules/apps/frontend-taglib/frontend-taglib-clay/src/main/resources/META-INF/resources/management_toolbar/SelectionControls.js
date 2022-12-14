@@ -74,9 +74,9 @@ const SelectionControls = ({
 			? itemsTotal
 			: elements.allSelectedElements.filter(':enabled').size();
 
-		setSelectedItems(selectedElementsCount);
+		setSelectedItems(currentPageSelectedElementsCount);
 
-		setActive(selectedElementsCount > 0);
+		setActive(currentPageSelectedElementsCount > 0);
 
 		const allCurrentPageElementsSelected =
 			currentPageSelectedElementsCount ===
