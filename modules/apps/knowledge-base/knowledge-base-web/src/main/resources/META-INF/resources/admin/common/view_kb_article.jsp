@@ -176,6 +176,16 @@ if (portletTitleBasedNavigation) {
 					/>
 				</liferay-expando:custom-attributes-available>
 
+				<c:if test="<%= enableKBArticleDescription && Validator.isNotNull(kbArticle.getDescription()) %>">
+					<div class="kb-attachments">
+						<h5 class="text-default"><liferay-ui:message key="description" /></h5>
+
+						<p class="text-default">
+							<%= HtmlUtil.escape(kbArticle.getDescription()) %>
+						</p>
+					</div>
+				</c:if>
+
 				<liferay-util:include page="/admin/common/kb_article_assets.jsp" servletContext="<%= application %>" />
 
 				<c:if test="<%= showKBArticleAttachments %>">

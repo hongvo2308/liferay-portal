@@ -31,6 +31,7 @@ if (resourceClassNameId == 0) {
 
 long resourcePrimKey = GetterUtil.getLong(request.getAttribute("init.jsp-resourcePrimKey"));
 
+boolean enableKBArticleDescription = GetterUtil.getBoolean(request.getAttribute("init.jsp-enableKBArticleDescription"));
 boolean enableKBArticleRatings = GetterUtil.getBoolean(request.getAttribute("init.jsp-enableKBArticleRatings"));
 boolean showKBArticleAssetEntries = GetterUtil.getBoolean(request.getAttribute("init.jsp-showKBArticleAssetEntries"));
 boolean showKBArticleAttachments = GetterUtil.getBoolean(request.getAttribute("init.jsp-showKBArticleAttachments"));
